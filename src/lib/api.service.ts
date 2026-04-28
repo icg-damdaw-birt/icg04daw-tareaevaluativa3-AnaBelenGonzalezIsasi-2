@@ -127,5 +127,12 @@ export const api = {
   deleteMovie: (id: string) => request<void>(`/api/movies/${id}`, { method: 'DELETE' }),
 
   // TODO (UD4 - Video): toggleFavorite
-  // TODO (UD4 - Ejercicio): rateMovie
+  /**
+   * Califica una película con un valor de 0 a 5.
+   * @param id El ID de la película a calificar.
+   * @param rating El valor de la calificación (0-5).
+   * @returns La película actualizada con la nueva calificación.
+   */
+  rateMovie: (id: string, rating: number) =>
+    request<Movie>(`/api/movies/${id}/rate`, { method: 'PATCH', body: { rating } }),
 };
