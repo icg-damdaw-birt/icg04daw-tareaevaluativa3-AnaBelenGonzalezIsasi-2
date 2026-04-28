@@ -8,16 +8,11 @@ export interface RegisterPayload extends Credentials {
   confirmPassword?: string;
 }
 
-export interface Movie {
+export interface Movie extends MoviePayload {
   id: string;
-  title: string;
-  director: string;
-  posterUrl?: string | null;
-  year?: number | null;
-  createdAt?: string | null;
-  updatedAt?: string | null;
-  // TODO (UD4 - Video): añadir favorite?: boolean
-  // TODO (UD4 - Ejercicio): añadir rating?: number
+  ownerId: string;
+  isFavorite: boolean;
+  rating: number | null;
 }
 
 export interface MoviePayload {
@@ -39,4 +34,12 @@ export interface ApiErrorPayload {
   error?: string;
   message?: string;
   [key: string]: unknown;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  password: string;
+  isFavorite: boolean;
+  rating: number | null;
 }

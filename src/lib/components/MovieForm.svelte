@@ -62,12 +62,6 @@
       return false;
     }
 
-    const yearNum = parseInt(String(year), 10);
-    if (!yearNum || yearNum < 1800 || yearNum > new Date().getFullYear() + 5) {
-      error = 'Introduce un año válido';
-      return false;
-    }
-
     return true;
   }
 
@@ -78,20 +72,19 @@
 
     const trimmedTitle = title.trim();
     const trimmedDirector = director.trim();
-    const trimmedPoster = posterUrl.trim();
     const numericYear = Number(year);
 
-    if (!trimmedTitle || !trimmedDirector || Number.isNaN(numericYear) || numericYear < 1888) {
-      error = 'Completa el título, director y un año válido.';
+    if (!trimmedTitle || !trimmedDirector || !numericYear) {
+      error = 'Completa el título, el director y el año.';
       return;
     }
 
-    const payload: MovieFormSubmit = {
+    const payload = {
       id: initialMovie?.id,
       title: trimmedTitle,
       director: trimmedDirector,
       year: numericYear,
-      posterUrl: trimmedPoster || undefined,
+      posterUrl: posterUrl.trim() || undefined
     };
 
     onsubmit?.(payload);
@@ -119,29 +112,21 @@
         type="text"
       />
     </label>
-    <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
-      Director
-      <input
-        bind:value={director}
-        class="rounded border border-slate-300 px-3 py-2 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-        name="director"
-        placeholder="Stanley Kubrick"
-        required
-        type="text"
-      />
-    </label>
-    <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
-      Año
-      <input
-        bind:value={year}
-        class="rounded border border-slate-300 px-3 py-2 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-        min="1888"
-        name="year"
-        placeholder="1968"
-        required
-        type="number"
-      />
-    </label>
+    <label for="director" class="mb-1 block text-sm font-medium text-slate-700">Director</label>
+    <input
+      type="text"
+      id="director"
+      class="w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+      bind:value={director}
+    />
+    <label for="year" class="mb-1 block text-sm font-medium text-slate-700">Año</label>
+    <input
+      type="number"
+      id="year"
+      class="w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+      bind:value={year}
+      placeholder="Ej: 2023"
+    />
     <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
       Póster (URL)
       <input

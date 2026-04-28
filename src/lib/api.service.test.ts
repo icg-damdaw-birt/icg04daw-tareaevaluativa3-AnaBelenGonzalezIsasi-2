@@ -291,6 +291,41 @@ describe('API Service - Autenticación', () => {
   });
 });
 
+describe('API Service - Películas', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorageMock.clear();
+    authToken.set('test-token'); // Simular usuario logueado
+  });
+
+  it('debería marcar/desmarcar una película como favorita', async () => {
+    // ARRANGE
+    const movieId = '123';
+    const updatedMovie = { id: movieId, title: 'Inception', isFavorite: true };
+
+    (globalThis.fetch as any).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      headers: {
+        get: (name: string) => name === 'content-type' ? 'application/json' : null
+      },
+      json: async () => updatedMovie
+    });
+
+    // ACT
+    const result = await api.toggleFavorite(movieId);
+
+    // ASSERT
+    expect(result).toEqual(updatedMovie);
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+    
+    const callArgs = (globalThis.fetch as any).mock.calls[0];
+    expect(callArgs[0]).toBe(`http://localhost:3000/api/movies/${movieId}/toggle-favorite`);
+    expect(callArgs[1].method).toBe('PATCH');
+    expect(callArgs[1].headers.get('Authorization')).toBe('Bearer test-token');
+  });
+});
+
 /**
  * NOTAS PARA ESTUDIANTES:
  * 
@@ -323,3 +358,24 @@ describe('API Service - Autenticación', () => {
  *    - SvelteKit: Mockeamos fetch directamente
  *    - Ambos verifican el mismo comportamiento de negocio
  */
+
+// Mock de la API
+api: {
+	getMovies: vi.fn(),
+	createMovie: vi.fn(),
+	updateMovie: vi.fn(),
+	deleteMovie: vi.fn(),
+	toggleFavorite: vi.fn()
+}
+
+describe('api.service', () => {
+	it('debería llamar a http.del con la URL correcta para deleteMovie', () => {
+		api.deleteMovie('123');
+		expect(http.del).toHaveBeenCalledWith('/movies/123');
+	});
+
+	it('debería llamar a http.post con la URL correcta para toggleFavorite', () => {
+		api.toggleFavorite('123');
+		expect(http.post).toHaveBeenCalledWith('/movies/123/favorite');
+	});
+});

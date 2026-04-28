@@ -68,18 +68,33 @@ export const moviesStore = {
   },
 
   // Eliminar película
-  async deleteMovie(id: string): Promise<boolean> {
-    mutating = true;
+	async deleteMovie(id: string) {
+    loading = true;
     error = null;
     try {
       await api.deleteMovie(id);
       movies = movies.filter(m => m.id !== id);
       return true;
     } catch (err) {
-      error = err instanceof Error ? err.message : 'Error al eliminar película';
-      return false;
+      error = err instanceof Error ? err.message : 'Error desconocido al eliminar la película';
     } finally {
-      mutating = false;
+      loading = false;
+    }
+  },
+
+  async toggleFavorite(id: string) {
+    loading = true;
+    error = null;
+    try {
+      const updatedMovie = await api.toggleFavorite(id);
+      const index = movies.findIndex((m) => m.id === id);
+      if (index !== -1) {
+        movies[index] = updatedMovie;
+      }
+    } catch (e) {
+      error = e instanceof Error ? e.message : 'Error desconocido al cambiar el estado de favorito';
+    } finally {
+      loading = false;
     }
   },
 
