@@ -48,19 +48,13 @@
     const { id, title, director, year, posterUrl } = data;
     const payload: MoviePayload = { title, director, year, posterUrl };
 
-    if (id) {
-      // Modo edición: actualiza película existente
-      const ok = await moviesStore.updateMovie(id, payload);
-      if (ok) {
-        feedbackMessage = { type: 'info', text: 'Película actualizada correctamente.' };
-        editingMovie = null;
-      }
-    } else {
-      // Modo creación: añade nueva película
-      const ok = await moviesStore.createMovie(payload);
-      if (ok) {
-        feedbackMessage = { type: 'info', text: 'Película guardada correctamente.' };
-      }
+    const success = id
+      ? await moviesStore.updateMovie(id, payload)
+      : await moviesStore.createMovie(payload);
+
+    if (success) {
+      editingMovie = null; // Cierra el formulario
+      feedbackMessage = { type: 'info', text: `Película ${id ? 'actualizada' : 'creada'} con éxito.` };
     }
   }
 
@@ -83,6 +77,10 @@
   // Limpia el formulario lateral y vuelve al modo de creación.
   function handleCancelEdit() {
     editingMovie = null;
+  }
+
+  function handleRateMovie(movie: Movie, rating: number) {
+    moviesStore.rateMovie(movie, rating);
   }
 </script>
 
@@ -117,9 +115,14 @@
           Tu videoteca está vacía. Añade la primera película usando el formulario.
         </div>
       {:else}
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {#each moviesStore.movies as movie (movie.id)}
-            <MovieCard {movie} ondelete={handleDelete} onedit={handleEdit} />
+            <MovieCard
+              {movie}
+              ondelete={(id) => moviesStore.deleteMovie(id)}
+              onedit={(m) => (editingMovie = m)}
+              onrate={(m, rating) => handleRateMovie(m, rating)}
+            />
           {/each}
         </div>
       {/if}

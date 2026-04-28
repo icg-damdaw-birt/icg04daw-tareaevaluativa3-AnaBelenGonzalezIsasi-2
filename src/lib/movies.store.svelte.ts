@@ -94,5 +94,37 @@ export const moviesStore = {
   // Limpiar solo el error
   clearError() {
     error = null;
+  },
+
+  /**
+   * Califica una película con un valor entre 0 y 5 (actualización optimista).
+   * @param movie La película a calificar.
+   * @param rating La nueva calificación (0-5).
+   */
+  async rateMovie(movie: Movie, rating: number) {
+    if (rating < 0 || rating > 5) {
+      error = 'La calificación debe estar entre 0 y 5.';
+      return;
+    }
+
+    const originalRating = movie.rating;
+    mutating = true;
+    error = null;
+
+    // Actualización optimista
+    movie.rating = rating;
+
+    try {
+      const updatedMovie = await api.rateMovie(movie.id, rating);
+      // Sincronizar con la respuesta del servidor (puede tener más campos actualizados)
+      movie.rating = updatedMovie.rating;
+      movie.updatedAt = updatedMovie.updatedAt;
+    } catch (err) {
+      // Rollback en caso de error
+      movie.rating = originalRating;
+      error = err instanceof Error ? err.message : 'Error al calificar la película';
+    } finally {
+      mutating = false;
+    }
   }
 };

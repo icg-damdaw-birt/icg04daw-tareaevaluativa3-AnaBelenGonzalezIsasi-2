@@ -16,8 +16,15 @@ export interface Movie {
   year?: number | null;
   createdAt?: string | null;
   updatedAt?: string | null;
-  // TODO (UD4 - Video): añadir favorite?: boolean
-  // TODO (UD4 - Ejercicio): añadir rating?: number
+  /**
+   * Indica si la película está marcada como favorita.
+   */
+  favorite?: boolean;
+  /**
+   * Valoración de la película de 0 a 5.
+   * 0 significa que no ha sido calificada.
+   */
+  rating?: number;
 }
 
 export interface MoviePayload {
