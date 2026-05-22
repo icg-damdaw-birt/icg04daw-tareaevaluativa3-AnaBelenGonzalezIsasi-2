@@ -1,4 +1,5 @@
-﻿import { authToken } from './auth.store.svelte';
+﻿import { PUBLIC_API_URL } from '$env/static/public';
+import { authToken } from './auth.store.svelte';
 import type {
   ApiErrorPayload,
   Credentials,
